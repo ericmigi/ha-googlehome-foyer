@@ -86,3 +86,7 @@ python3 tests/test_api.py
 
 Protocol details are ported from the Google Home plugin in
 [coredevices/pebble-plugins](https://github.com/coredevices/pebble-plugins/tree/main/googlehome).
+
+## License
+
+MIT, see [LICENSE](LICENSE).
