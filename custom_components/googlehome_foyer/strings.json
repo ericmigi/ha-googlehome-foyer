@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sign in to Google Home",
+        "description": "1. In a desktop browser, open https://accounts.google.com/EmbeddedSetup and sign in with the Google account that owns your home.\n2. When it finishes (the page may hang or go blank), open developer tools, then Application, Cookies, accounts.google.com.\n3. Copy the value of the `oauth_token` cookie (starts with `oauth2_4/`) and paste it below within a few minutes.\n\nAlternatively paste an existing master token (`aas_et/...`) instead. Enter the account's email if Google doesn't return it (always needed with a master token).",
+        "data": {
+          "oauth_token": "oauth_token cookie",
+          "master_token": "Master token (optional)",
+          "email": "Google account email"
+        }
+      }
+    },
+    "error": {
+      "missing_token": "Paste an oauth_token cookie or a master token.",
+      "invalid_auth": "Google rejected the token. oauth_token cookies are single-use and expire quickly; sign in again and paste a fresh one.",
+      "cannot_connect": "Could not reach Google Home. Check the logs.",
+      "email_required": "Enter the Google account email (your token is kept; just add the email and submit)."
+    },
+    "abort": {
+      "already_configured": "This Google account is already set up.",
+      "reauth_successful": "Signed in again.",
+      "wrong_account": "That token belongs to a different Google account than this entry."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Google Home options",
+        "data": {
+          "lock_pin": "New lock PIN (for PIN-protected locks)",
+          "clear_pin": "Remove saved PIN"
+        },
+        "description": "{status} Leave blank to keep the saved PIN."
+      }
+    },
+    "error": {
+      "invalid_pin": "PIN must be at least 4 digits."
+    }
+  }
+}

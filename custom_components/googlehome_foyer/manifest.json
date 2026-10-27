@@ -1,0 +1,11 @@
+{
+  "domain": "googlehome_foyer",
+  "name": "Google Home (Foyer)",
+  "codeowners": ["@ericmigi"],
+  "config_flow": true,
+  "documentation": "https://github.com/ericmigi/ha-googlehome-foyer",
+  "issue_tracker": "https://github.com/ericmigi/ha-googlehome-foyer/issues",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.1.0"
+}
