@@ -42,6 +42,7 @@ PLATFORMS = [
 # ponytail: fixed poll intervals; foyer has no push channel we know of.
 STATE_INTERVAL = timedelta(seconds=30)
 GRAPH_INTERVAL = 600
+STALE_GRACE = 300  # seconds a failing poll may keep serving the last good snapshot
 
 
 @dataclass
@@ -60,6 +61,8 @@ class FoyerCoordinator(DataUpdateCoordinator[HomeData]):
         )
         self.client = client
         self._graph_at = 0.0
+        self._ok_at = 0.0
+        self._stale = False
 
     async def _async_update_data(self) -> HomeData:
         refresh_graph = self.data is None or time.monotonic() - self._graph_at > GRAPH_INTERVAL
@@ -77,7 +80,19 @@ class FoyerCoordinator(DataUpdateCoordinator[HomeData]):
         except FoyerAuthError as err:
             raise ConfigEntryAuthFailed(str(err)) from err
         except FoyerError as err:
-            raise UpdateFailed(str(err)) from err
+            # foyer returns sporadic 5xx/timeouts. Marking every entity unavailable for one bad
+            # poll makes service calls (e.g. an automation's turn_off) get skipped, so keep the
+            # last snapshot for a few minutes; commands use their own RPC and still work.
+            if self.data is None or time.monotonic() - self._ok_at > STALE_GRACE:
+                raise UpdateFailed(str(err)) from err
+            log = _LOGGER.debug if self._stale else _LOGGER.warning
+            log("Google Home poll failed, keeping last state: %s", err)
+            self._stale = True
+            return self.data
+        if self._stale:
+            _LOGGER.info("Google Home polling recovered")
+            self._stale = False
+        self._ok_at = time.monotonic()
         if refresh_graph:
             self._graph_at = time.monotonic()  # only once the whole snapshot succeeded
         for s in states.values():

@@ -332,7 +332,7 @@ async def _auth_post(session: aiohttp.ClientSession, form: dict[str, str]) -> di
             },
         ) as resp:
             status, text = resp.status, await resp.text()
-    except aiohttp.ClientError as err:
+    except (aiohttp.ClientError, TimeoutError) as err:
         raise FoyerError(f"Google auth request failed: {err}") from err
     if status == 429 or status >= 500:
         raise FoyerError(f"Google auth: HTTP {status}")
@@ -412,7 +412,7 @@ class FoyerClient:
                     },
                 ) as resp:
                     status, text = resp.status, await resp.text()
-            except aiohttp.ClientError as err:
+            except (aiohttp.ClientError, TimeoutError) as err:
                 raise FoyerError(f"foyer {method} request failed: {err}") from err
             if status in (401, 403) and attempt == 0:
                 self._bearer, self._expires = None, 0
